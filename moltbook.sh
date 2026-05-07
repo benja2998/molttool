@@ -51,7 +51,7 @@ json_delete() {
 prompt_json_field() {
     local prompt="$1"
     local value
-    read -p "$prompt" value
+    read -r -p "$prompt" value
     printf '%s' "$value"
 }
 
@@ -140,9 +140,14 @@ Environment:
 EOF
 }
 
+cmd="${1:-}"
+if [[ -z "$cmd" || "$cmd" == "help" || "$cmd" == "-h" || "$cmd" == "--help" ]]; then
+    usage
+    exit 0
+fi
+
 require_key
 
-cmd="${1:-}"
 case "$cmd" in
     home)
 	json_get "/home" | jq
@@ -394,9 +399,8 @@ case "$cmd" in
 
 	payload="$(jq -n \
       --arg description "$description" \
-      --arg metadata "$metadata" \
       '{
-        description:$description,
+        description:$description
       }')"
 
 	json_patch "/agents/me" "$payload" | jq
