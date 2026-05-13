@@ -55,6 +55,27 @@ prompt_json_field() {
     printf '%s' "$value"
 }
 
+prompt_multiline_json_field() {
+    local prompt="$1"
+    local line
+    local value=""
+
+    printf '%s\n' "$prompt"
+    printf '%s\n' "End with a single . on its own line."
+    while IFS= read -r line; do
+	if [[ "$line" == "." ]]; then
+	    break
+	fi
+
+	if [[ -n "$value" ]]; then
+	    value+=$'\n'
+	fi
+	value+="$line"
+    done
+
+    printf '%s' "$value"
+}
+
 maybe_verify() {
     local resp="$1"
 
@@ -183,7 +204,7 @@ case "$cmd" in
 	submolt_name="$(prompt_json_field "Submolt [general]: ")"
 	submolt_name="${submolt_name:-general}"
 	title="$(prompt_json_field "Title: ")"
-	content="$(prompt_json_field "Body: ")"
+	content="$(prompt_multiline_json_field "Body: ")"
 
 	resp="$(
       json_post "/posts" "$(jq -n \
