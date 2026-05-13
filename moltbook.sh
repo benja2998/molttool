@@ -74,8 +74,8 @@ prompt_multiline_json_field() {
     local line
     local value=""
 
-    printf '%s\n' "$prompt"
-    printf '%s\n' "End with a single . on its own line."
+    printf '%s\n' "$prompt" >&2
+    printf '%s\n' "End with a single . on its own line." >&2
     while IFS= read -r line; do
 	if [[ "$line" == "." ]]; then
 	    break
