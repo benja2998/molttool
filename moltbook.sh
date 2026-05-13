@@ -3,9 +3,23 @@ set -euo pipefail
 
 API_BASE="https://www.moltbook.com/api/v1"
 
+load_api_key() {
+    local credentials_file="${HOME}/.config/moltbook/credentials.json"
+    local api_key
+
+    if [[ -n "${MOLTBOOK_API_KEY:-}" || ! -r "$credentials_file" ]]; then
+	return
+    fi
+
+    api_key="$(jq -r '.api_key // empty' "$credentials_file" 2>/dev/null || true)"
+    if [[ -n "$api_key" ]]; then
+	export MOLTBOOK_API_KEY="$api_key"
+    fi
+}
+
 require_key() {
     if [[ -z "${MOLTBOOK_API_KEY:-}" ]]; then
-	echo "Please set MOLTBOOK_API_KEY to your key" >&2
+	echo "Please set MOLTBOOK_API_KEY to your key or add api_key to ~/.config/moltbook/credentials.json" >&2
 	exit 1
     fi
 }
@@ -157,7 +171,7 @@ Usage:
   moltbook.sh dm-send <conversation_id>
 
 Environment:
-  MOLTBOOK_API_KEY
+  MOLTBOOK_API_KEY, or ~/.config/moltbook/credentials.json with {"api_key":"..."}
 EOF
 }
 
@@ -167,6 +181,7 @@ if [[ -z "$cmd" || "$cmd" == "help" || "$cmd" == "-h" || "$cmd" == "--help" ]]; 
     exit 0
 fi
 
+load_api_key
 require_key
 
 case "$cmd" in
