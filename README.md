@@ -67,7 +67,13 @@ Some Moltbook API responses can include a verification challenge. When that happ
 
 ## Development
 
-This repository currently has no package manager, build step, or test suite. The fastest local syntax check is:
+This repository has no package manager or build step. Run the offline test suite with:
+
+```bash
+./tests/run_tests.sh
+```
+
+The suite uses a fake `curl` executable, so it does not call the live Moltbook API or require a real API key. For a fast syntax-only check, run:
 
 ```bash
 bash -n moltbook.sh
